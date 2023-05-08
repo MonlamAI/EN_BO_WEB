@@ -32,14 +32,14 @@ def create_repo(text,repo_name):
     text_path = f"{repo_path}/{repo_name}.txt"
     Path(text_path).write_text(text)
     create_readme(Path(repo_path))
-    """ github_publish(
+    github_publish(
         path = repo_path,
         not_includes=[],
         org="MonlamAI",
         token = os.getenv("GITHUB_TOKEN")
     )
     issue = create_github_issue(Path(repo_path).name)
-    close_github_issue(Path(repo_path).name,issue.number) """
+    close_github_issue(Path(repo_path).name,issue.number)
     return repo_path
 
 
