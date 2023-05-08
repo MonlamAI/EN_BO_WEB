@@ -1,6 +1,7 @@
 import docx
 from pathlib import Path
 from time import sleep
+from collections import deque
 import uuid
 import os
 from github_utils import github_publish,create_github_issue,close_github_issue,delete_repo
@@ -25,20 +26,20 @@ def split_docx(doc):
     return splitted_files
 
 
-def create_repo(text,start_index):
-    repo_path = f"./data/{str(uuid.uuid4())[:4]}"
+def create_repo(text,repo_name):
+    repo_path = f"./data/{repo_name}"
     Path(repo_path).mkdir(exist_ok=True, parents=True)
-    text_path = f"{repo_path}/{start_index}.txt"
+    text_path = f"{repo_path}/{repo_name}.txt"
     Path(text_path).write_text(text)
     create_readme(Path(repo_path))
-    github_publish(
+    """ github_publish(
         path = repo_path,
         not_includes=[],
-        org="OPENPECHA-DATA",
+        org="MonlamAI",
         token = os.getenv("GITHUB_TOKEN")
     )
     issue = create_github_issue(Path(repo_path).name)
-    close_github_issue(Path(repo_path).name,issue.number)
+    close_github_issue(Path(repo_path).name,issue.number) """
     return repo_path
 
 
@@ -51,10 +52,14 @@ def create_readme(path):
 def create_repos(texts):
     start_index = 7000
     repos = []
+    langs = deque(["BO","EN"])
     for i,text in enumerate(texts):
         if i % 2 == 0 and i != 0:
             start_index += 1
-        repos.append(create_repo(text,start_index))
+        lang = langs.popleft()
+        langs.append(lang)
+        repo_name = f"{lang}{start_index}"
+        repos.append(create_repo(text,repo_name))
     return repos
 
 def main(docx_path):
